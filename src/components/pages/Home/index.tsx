@@ -1,64 +1,114 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // External Libraries
 import React from 'react'
+import useSWR from 'swr'
 
 // Components
+import { Typography } from '@components/toolkit/Typography'
+import { Skeleton } from '@components/structure/Skeleton'
+import { NavBar } from '@components/structure/Navbar'
+import { FileCard } from '../../commons/toolkit/FileCard'
+import { FolderCard } from '../../commons/toolkit/FolderCard'
+
+// Assets
+import { IoIosArrowForward } from 'react-icons/io'
+
+// Services
+import { getFolders } from '@services/api/folders'
+
+// Types
 
 // Styles
 import {
   Container,
-  ContainerButtonLogout,
+  ContainerFiles,
   ContainerFolders,
+  ContainerNameType,
+  ContainerSkeleton,
+  ContainerTypography,
+  HeaderDrive,
+  Line,
   PageContent
 } from './styles'
-import { NavBar } from '@components/structure/Navbar'
-import { Button } from '@components/buttons/Button'
-import { useAuth } from '@hooks/useAuth'
-import { useRouter } from 'next/router'
-import useSWR from 'swr'
-import { getFolders } from '@services/api/folders'
-import { FileCard } from '../../commons/toolkit/FileCard'
-import { FolderCard } from '../../commons/toolkit/FolderCard'
-import { Typography } from '@components/toolkit/Typography'
-// import { Main } from '@components/structure/Main'
 
 export const Home: React.FC = () => {
-  const { signOut } = useAuth()
-  const { push } = useRouter()
-  const { data } = useSWR('/folders', getFolders)
-
+  const { data, isLoading, mutate } = useSWR('/folders', getFolders)
+  // Fuctions
   function renderFiles() {
-    return data?.files.map(item => <FileCard key={item.id} file={item} />)
-  }
-
-  function renderFolders() {
-    return data?.subFolders.map(item => (
-      <FolderCard key={item.id} folder={item} />
+    if (isLoading) {
+      return Array.from({ length: 5 }, (_, index) => (
+        <ContainerSkeleton key={index}>
+          <Skeleton width="100%" height="2rem" />
+        </ContainerSkeleton>
+      ))
+    }
+    return data?.files.map(item => (
+      <FileCard
+        key={item.id}
+        file={item}
+        onDeleteSuccess={mutate}
+        onRenameSuccess={mutate}
+      />
     ))
   }
 
-  async function logout() {
-    try {
-      await signOut()
-      push('/login')
-    } catch (error) {
-      console.log('ERROR', error)
+  function renderFolders() {
+    if (isLoading) {
+      return Array.from({ length: 5 }, (_, index) => (
+        <Skeleton key={index} width="9rem" height="3rem" />
+      ))
     }
+
+    return data?.subFolders.map(item => (
+      <FolderCard
+        key={item.id}
+        folder={item}
+        onDeleteSuccess={mutate}
+        onRenameSuccess={mutate}
+      />
+    ))
   }
 
   return (
     <Container>
-      <NavBar />
-      <PageContent>
-        <ContainerButtonLogout>
-          <Button onClick={logout} color={'green'} label={'Logout'} />
-        </ContainerButtonLogout>
+      <NavBar onFileUploaded={mutate} />
 
-        <Typography variant="h5">Folders</Typography>
+      <PageContent>
+        <ContainerTypography>
+          <HeaderDrive>
+            My drive
+            <IoIosArrowForward />
+          </HeaderDrive>
+        </ContainerTypography>
+
+        <Line />
+
+        <ContainerTypography>
+          <Typography variant="h5" color={'grey'}>
+            Folders
+          </Typography>
+        </ContainerTypography>
 
         <ContainerFolders>{renderFolders()}</ContainerFolders>
 
-        <Typography variant="h5">Files</Typography>
-        {renderFiles()}
+        <Line />
+
+        <ContainerTypography>
+          <Typography variant="h5" color={'grey'}>
+            Files
+          </Typography>
+        </ContainerTypography>
+
+        <ContainerNameType>
+          <Typography variant="b1" color={'grey'}>
+            Name
+          </Typography>
+          <Typography variant="b1" color={'grey'}>
+            Type
+          </Typography>
+        </ContainerNameType>
+
+        <ContainerFiles>{renderFiles()}</ContainerFiles>
       </PageContent>
     </Container>
   )

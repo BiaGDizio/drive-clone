@@ -22,6 +22,7 @@ export const MenuNavBar: React.FC = () => {
           <Typography variant="b1" color="#888888">
             {item.title}
           </Typography>
+          {/* <img src="/chevrons/right.svg" alt="" style={} /> */}
         </ListItem>
       </Link>
     ))

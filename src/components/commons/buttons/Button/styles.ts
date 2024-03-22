@@ -12,6 +12,7 @@ interface ContainerProps {
 
 export const Container = styled.button<ContainerProps>`
   width: ${props => (props.$fitWidth ? '100%' : 'max-content')};
+  height: max-content;
 
   position: relative;
 

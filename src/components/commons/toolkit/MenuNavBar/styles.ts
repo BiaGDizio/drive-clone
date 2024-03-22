@@ -23,6 +23,7 @@ export const ListItem = styled.li`
   align-items: center;
   color: #888888;
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  /* justify-content: space-between; */
 
   &:hover {
     background-color: #f3f3f3;

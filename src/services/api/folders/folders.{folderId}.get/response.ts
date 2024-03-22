@@ -1,6 +1,5 @@
 export interface HttpResponse {
   folder: Folder
-
   files: File[]
   subFolders: Folder[]
 }
@@ -8,11 +7,13 @@ export interface HttpResponse {
 export interface Folder {
   id: number
   name: string
-  created_by?: string
+  createdBy?: string
 }
 
 export interface File {
   id: string
   name: string
-  created_by: string
+  createdBy: string
+  key: string
+  type: string
 }

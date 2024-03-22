@@ -8,11 +8,12 @@ export interface HttpResponse {
 export interface Folder {
   id: number
   name: string
-  created_by?: string
+  createdBy?: string
 }
 
 export interface File {
   id: string
   name: string
-  created_by: string
+  createdBy: string
+  type: string
 }
